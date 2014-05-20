@@ -7,13 +7,13 @@ This script bundles a number of files into cloudinit supportable userdata, which
 
 ### Installation
 
-`go get github.com/boyand/cloudinit-userdata-builder`
+    go get github.com/boyand/cloudinit-userdata-builder
 
 ### Usage
 
 This binary supports two flags by default: config file path and encode flag for output formatting. In order to use it, your need to supply a config file for your userdata using the following format: 
 
-`cat userdata.conf`
+    cat userdata.conf
 ```
 {
     "cloud_init_parts": [
@@ -35,7 +35,7 @@ This binary supports two flags by default: config file path and encode flag for 
 
 If you want to use the binary to build drop-in bundle for AWS, you can run it with: 
 
-`cloudinit-userdata-builder --config="/path/to/userdata.conf" --encode`
+    cloudinit-userdata-builder --config="/path/to/userdata.conf" --encode
 
  
 
