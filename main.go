@@ -31,10 +31,10 @@ type Configuration struct {
 }
 
 func buildUserData(files []File) (string, error) {
-	//Let's build the launch config userdata
+	// Let's build the launch config userdata
 	w := &bytes.Buffer{}
 	mimeWriter := multipart.NewWriter(w)
-	//Craft a header for our mime type
+	// Craft a header for our mime type
 	fmt.Fprintf(w, "Content-Type: multipart/mixed; boundary=\"%s\"\r\n\r\n", mimeWriter.Boundary())
 	for _, file := range files {
 		fileParts := strings.Split(file.Path, "/")
@@ -77,7 +77,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	//Parse configuration
+	// Parse configuration
 	config, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		fmt.Printf("Unable to open config file %s: %v\n", configFile, err)
@@ -89,7 +89,7 @@ func main() {
 
 	files := make([]File, 0)
 
-	//Construct the files map
+	// Construct the files map
 
 	for _, file := range configuration.UserDataFiles {
 		b, err := ioutil.ReadFile(file[0])
