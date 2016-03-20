@@ -30,10 +30,17 @@ type Configuration struct {
 	UserDataFiles [][]string `json:"cloud_init_parts"`
 }
 
-func buildUserData(files []File) (string, error) {
+func buildUserData(files []File, boundary string) (string, error) {
 	// Let's build the launch config userdata
 	w := &bytes.Buffer{}
 	mimeWriter := multipart.NewWriter(w)
+
+	if boundary != "" {
+		if err := mimeWriter.SetBoundary(boundary); err != nil {
+			return "", err
+		}
+	}
+
 	// Craft a header for our mime type
 	fmt.Fprintf(w, "Content-Type: multipart/mixed; boundary=\"%s\"\r\n\r\n", mimeWriter.Boundary())
 	for _, file := range files {
@@ -54,7 +61,8 @@ func buildUserData(files []File) (string, error) {
 			return "", fmt.Errorf("Unable to copy the data part: %v", err)
 		}
 	}
-	_ = mimeWriter.Close()
+
+	mimeWriter.Close()
 
 	return w.String(), nil
 }
@@ -62,12 +70,14 @@ func buildUserData(files []File) (string, error) {
 func main() {
 
 	var (
-		configFile string
-		encode     bool
+		configFile    string
+		encode        bool
+		fixedBoundary bool
 	)
 
 	flag.StringVar(&configFile, "config", "<file>", "Config file containing paths and type of the userdata")
 	flag.BoolVar(&encode, "encode", false, "Base64 encode the userdata")
+	flag.BoolVar(&fixedBoundary, "fixedBoundary", false, "Use the same boundary so that same input yields consistent output")
 
 	flag.Parse()
 
@@ -105,7 +115,12 @@ func main() {
 		files = append(files, f)
 	}
 
-	userdata, err := buildUserData(files)
+	var boundary string
+	if fixedBoundary {
+		boundary = "MIMEBOUNDARY"
+	}
+
+	userdata, err := buildUserData(files, boundary)
 	if err != nil {
 		fmt.Printf("Error building userdata: %v", err)
 		os.Exit(1)
