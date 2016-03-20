@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"mime/multipart"
 	"net/textproto"
 	"os"
 	"strings"
+
+	"github.com/sthulb/mime/multipart"
 )
 
 var quoteEscaper = strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
@@ -45,7 +46,7 @@ func buildUserData(files []File, boundary string) (string, error) {
 	fmt.Fprintf(w, "Content-Type: multipart/mixed; boundary=\"%s\"\r\n\r\n", mimeWriter.Boundary())
 	for _, file := range files {
 		fileParts := strings.Split(file.Path, "/")
-		h := make(textproto.MIMEHeader)
+		h := textproto.MIMEHeader{}
 		h.Set("Content-Type", fmt.Sprintf("%s; charset=\"us-ascii\"", file.Type))
 		h.Set("MIME-Version", "1.0")
 		h.Set("Content-Transfer-Encoding", "7bit")
